@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="org.hyl.cloudnote.dao.BookDao">
+	<!-- 参数类型简写string,list,int(相当于java.lang.String) -->
+	<select id="findByUserId" parameterType="string" resultType="org.hyl.cloudnote.entity.Book">
+		select * from cn_notebook where cn_user_id=#{userId}
+	</select>
+	<insert id="save" parameterType="org.hyl.cloudnote.entity.Book">
+		insert into cn_notebook values(#{cn_notebook_id},#{cn_user_id},#{cn_notebook_type_id},#{cn_notebook_name},#{cn_notebook_desc},#{cn_notebook_createtime})
+	</insert>
+	<delete id="deleteBook" parameterType="string">
+		delete from cn_notebook where cn_notebook_id=#{bookId}
+	</delete>
+	<update id="renameBook" parameterType="map">
+		update cn_notebook set cn_notebook_name=#{bookName} where cn_notebook_id=#{bookId}
+	</update>
+</mapper>

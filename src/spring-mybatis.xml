@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"  
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+	<bean id="dbcp" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="username" value="root"/>
+		<property name="password" value="129520"/>
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+<!--		<property name="url" value="jdbc:mysql://192.168.150.132:3306/cloud_note?useUnicode=true&amp;characterEncoding=utf8"/>-->
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/cloud_note?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=UTC"/>
+		<property name="initialSize" value="1"/>
+	</bean>
+	<bean id="ssf" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 注入连接信息 -->
+		<property name="dataSource" ref="dbcp"/>
+		<!-- 注入sql定义文件信息 -->
+		<property name="mapperLocations" value="classpath:org/hyl/cloudnote/sql/*.xml"/>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 扫描包下所有接口，生成实现对象 -->
+		<property name="basePackage" value="org.hyl.cloudnote.dao"/>
+		<!-- 注入SqlSessionFactory，可以省略 -->
+		<property name="sqlSessionFactory" ref="ssf"/>
+	</bean>
+	<!-- 事物配置（注解） -->
+	<!-- <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dbcp"/>
+	</bean>
+	<tx:annotation-driven transaction-manager="txManager"/> -->
+	
+	<!-- 事物配置（XML） -->
+	<bean id="txManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dbcp"/>
+	</bean>
+	<!-- 指定txManager作用在哪些组件及其方法上 -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<!-- 指定作用在哪些方法,参考目标组件及方法 -->
+		<tx:attributes>
+			<!-- 查询操作用只读事务 -->
+			<tx:method name="load*" read-only="true"/>
+			<!-- 其他操作用可读可写事务 -->
+			<tx:method name="*"/>
+		</tx:attributes>
+	</tx:advice>
+	<!-- 指定txManager作用在哪些组件上 -->
+	<aop:config proxy-target-class="true">
+		<aop:pointcut expression="within(org.hyl.cloudnote.service.*)" id="targetPoint"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="targetPoint"/>
+	</aop:config>
+</beans>
