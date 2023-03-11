@@ -78,6 +78,7 @@ CREATE TABLE `cn_share` (
   `cn_share_title` varchar(500) binary DEFAULT NULL COMMENT '共享标题',
   `cn_share_body` text binary COMMENT '共享内容',
   `cn_note_id` varchar(100) binary DEFAULT NULL COMMENT '笔记id',
+  `cn_user_id` varchar(100) binary DEFAULT NULL COMMENT '用户ID',
   PRIMARY KEY (`cn_share_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

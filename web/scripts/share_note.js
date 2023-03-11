@@ -63,6 +63,7 @@ function searchNote(e){
 						var sli = '<li class="disable">';
 							sli+= '	<a ><i class="fa fa-file-text-o" title="online" rel="tooltip-bottom"></i>';
 							sli+= shareTitle;					
+							sli+= '</a>';
 							sli+= '</li>';
 						//绑定一个noteId
 						var $li = $(sli);
